@@ -1,0 +1,12 @@
+.wrapper{
+  padding-top: 5%;
+  margin: 0 15px;
+
+  display: flex;
+  justify-content: center;
+}
+
+.message{
+  font-weight: 900;
+  font-size: xxx-large;
+}
