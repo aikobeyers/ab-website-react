@@ -1,5 +1,5 @@
 export default function Secret() {
     return (
-        <div>route 1</div>
+        <div>This is a secret</div>
     );
 }
