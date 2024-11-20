@@ -8,6 +8,8 @@ const quotes: Array<string> = [
 
 const getQuote = () => {
     const index = Math.floor(Math.random() * quotes.length);
+    console.log(quotes);
+    console.log(index);
     return quotes[index]
 }
 
