@@ -6,17 +6,22 @@ const quotes: Array<string> = [
     'Give me 5 bucks'
 ];
 
+/*
 const getQuote = () => {
     const index = Math.floor(Math.random() * quotes.length);
     console.log(quotes);
     console.log(index);
     return quotes[index]
 }
+*/
 
 export default function Snacks() {
+    console.log('pageload');
+    const index = Math.floor(Math.random() * quotes.length);
+
     return (
         <div className={style.wrapper}>
-            <span className={style.message}>{getQuote()}</span>
+            <span className={style.message}>{quotes[index]}</span>
         </div>
     );
 }
