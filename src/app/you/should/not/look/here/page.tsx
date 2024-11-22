@@ -2,13 +2,11 @@
 import style from './page.module.css';
 import {useEffect, useState} from "react";
 
+interface Quote {
+    quote: string;
+}
 
-const quotesList: Array<string> = [
-    'If you are seeing this, buy me snacks',
-    'You have to buy me a beer',
-    'Give me 5 bucks'
-];
-const index = Math.floor(Math.random() * quotesList.length);
+let index = 0;
 export default function SecretMessage() {
     const [displayQuote, setDisplayQuote] = useState('');
     useEffect(() => {
@@ -16,6 +14,7 @@ export default function SecretMessage() {
             .then((res) => res.json())
             .then((data) => data.map((record: Quote) => record.quote))
             .then((quotes) => {
+                index = Math.floor(Math.random() * quotes.length)
                 setDisplayQuote(quotes[index])
             })
 
