@@ -14,9 +14,8 @@ export default function SecretMessage() {
     useEffect(() => {
         fetch('/api/quotes')
             .then((res) => res.json())
-            .then((data) => data.map((record) => record.quote))
+            .then((data) => data.map((record: Quote) => record.quote))
             .then((quotes) => {
-                console.log('state quotes', quotes, index);
                 setDisplayQuote(quotes[index])
             })
 

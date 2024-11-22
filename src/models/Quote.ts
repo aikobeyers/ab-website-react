@@ -1,0 +1,3 @@
+interface Quote {
+    quote: string;
+}
