@@ -3,7 +3,7 @@ import styles from './page.module.css'
 import {useEffect, useState} from "react";
 
 interface Quote {
-    _id: string;
+    _id?: string;
     quote: string;
     display: boolean;
 }
@@ -13,7 +13,8 @@ export default function AdminPanel() {
     const [loggedIn, setLoggedIn] = useState(false);
     const [quotes, setQuotes] = useState<Quote[]>([]);
     const [rowInUpdateState, setRowInUpdateState] = useState<string>('');
-
+    const [showNewRecordRow, setShowNewRecordRow] = useState(false);
+    const [newQuote, setNewQuote] = useState<Quote>({quote: '', display: true});
     const login = () => {
         if (password === 'aiko') {
             setLoggedIn(true);
@@ -35,33 +36,70 @@ export default function AdminPanel() {
         }
     }, [loggedIn]);
 
-    const updateRecord = (id: string) => {
+    const updateRecord = (id?: string) => {
+        if(!id) {
+            return;
+        }
         const quoteToUpdate = quotes.find(q => q._id === id);
-        if(quoteToUpdate){
-            // TODO figure out why it returns 500 via web but not via Postman
-            fetch(`/api/quotes/${id}`, {
+        if (quoteToUpdate) {
+            // TODO figure out why it returns 404 via web
+            fetch(`/api/quotes/update/${id}`, {
                 method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
                 body: JSON.stringify(quoteToUpdate)
             })
+                .catch(e => console.log(e))
                 .then(() => setRowInUpdateState(''))
         }
     }
 
-    const handleCheckboxChange = (id: string, newValue: boolean) => {
-        setQuotes((prevQuotes) =>
-            prevQuotes.map((quote) =>
-                quote._id === id ? {...quote, display: newValue} : quote
-            )
-        );
+    const handleCheckboxChange = (newValue: boolean, id?: string) => {
+        if(id){
+            setQuotes((prevQuotes) =>
+                prevQuotes.map((quote) =>
+                    quote._id === id ? {...quote, display: newValue} : quote
+                )
+            );
+        }
     }
 
-    const handleInputChange = (id: string, newValue: string) => {
-        setQuotes((prevQuotes) =>
-            prevQuotes.map((quote) =>
-                quote._id === id ? {...quote, quote: newValue} : quote
-            )
-        );
+    const handleInputChange = ( newValue: string, id?: string) => {
+        if(id){
+            setQuotes((prevQuotes) =>
+                prevQuotes.map((quote) =>
+                    quote._id === id ? {...quote, quote: newValue} : quote
+                )
+            );
+        }
     };
+
+    const handleNewQuoteInputChange = (newValue: string) => {
+        setNewQuote((prevValue) => ({...prevValue, quote: newValue}))
+    }
+
+    const handleNewQuoteCheckboxChange = (newValue: boolean) => {
+        setNewQuote((prevValue) => ({...prevValue, display: newValue}))
+    }
+
+    const addNewQuote = () => {
+        fetch(`/api/quotes`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newQuote)
+        })
+            .then(() => {
+                fetch('/api/quotes')
+                    .then((res) => res.json())
+                    .then(data => {
+                        setShowNewRecordRow(false);
+                        setQuotes(data);
+                    })
+            })
+    }
 
     return (
         <div className={styles.adminPanelContainer}>
@@ -96,10 +134,12 @@ export default function AdminPanel() {
                                         <tr key={index}>
                                             <td>
                                                 <input className={styles.quoteInputField} value={quote.quote}
-                                                       onChange={(e) => handleInputChange(quote._id, e.target.value)}/>
+                                                       onChange={(e) => handleInputChange(e.target.value, quote._id)}/>
                                             </td>
                                             <td>
-                                                <input type={"checkbox"} checked={quote.display} onChange={(e) => handleCheckboxChange(quote._id, e.target.checked)}/></td>
+                                                <input type={"checkbox"} checked={quote.display}
+                                                       onChange={(e) => handleCheckboxChange(e.target.checked, quote._id)}/>
+                                            </td>
                                             <td>
                                                 <button onClick={() => updateRecord(quote._id)}>save</button>
                                             </td>
@@ -111,13 +151,30 @@ export default function AdminPanel() {
                                                 <input type={"checkbox"} checked={quote.display} disabled={true}
                                                        readOnly={true}/></td>
                                             <td>
-                                                <button onClick={() => setRowInUpdateState(quote._id)}>edit</button>
+                                                <button onClick={() => quote._id && setRowInUpdateState(quote._id)}>edit</button>
                                             </td>
                                         </tr>
                                 ))
                             }
+                            {
+                                showNewRecordRow && (
+                                    <tr>
+                                        <td>
+                                            <input className={styles.quoteInputField} value={newQuote.quote}
+                                                   onChange={(e) => handleNewQuoteInputChange(e.target.value)}/>
+                                        </td>
+                                        <td>
+                                            <input type={"checkbox"} checked={newQuote.display}
+                                                   onChange={(e) => handleNewQuoteCheckboxChange(e.target.checked)}/></td>
+                                        <td>
+                                            <button onClick={() => addNewQuote()}>save</button>
+                                        </td>
+                                    </tr>
+                                )
+                            }
                             </tbody>
                         </table>
+                        <button onClick={() => setShowNewRecordRow(true)}>Add</button>
                     </div>
             }
         </div>

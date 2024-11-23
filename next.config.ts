@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
         return [
             {
                 source: '/api/quotes',
+                // destination: 'http://localhost:3456/.netlify/functions/server',
                 destination: 'https://secret-message-api.netlify.app/.netlify/functions/server',
             },
         ];
