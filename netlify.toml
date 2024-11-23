@@ -1,0 +1,14 @@
+[build]
+base = "/"                      # Base directory
+command = "npm run build"       # Build command
+publish = ".next"               # Publish directory
+functions = "netlify/functions" # Functions directory
+
+[build.environment]
+NODE_VERSION = "18"             # Specify the Node.js version if needed
+
+[functions]
+directory = "netlify/functions" # Functions directory
+
+[build.processing]
+skip_processing = true          # Skip default processing if required
