@@ -26,7 +26,7 @@ export default function SecretMessage() {
     return (
         <div className={style.wrapper}>
             {
-                true
+                isLoading
                     ?
                     <div className={style.loaderContainer}>
                         <Skeleton width={100} height={50} borderRadius={5}/>
