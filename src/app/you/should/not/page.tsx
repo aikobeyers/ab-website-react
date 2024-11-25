@@ -37,26 +37,48 @@ export default function AdminPanel() {
     }, [loggedIn]);
 
     const updateRecord = (id?: string) => {
-        if(!id) {
+        if (!id) {
             return;
         }
         const quoteToUpdate = quotes.find(q => q._id === id);
         if (quoteToUpdate) {
             // TODO figure out why it returns 404 via web
-            fetch(`/api/quotes/update/${id}`, {
+            /*fetch(`/api/quotes/update`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(quoteToUpdate)
             })
-                .catch(e => console.log(e))
-                .then(() => setRowInUpdateState(''))
+                .then(() => {
+                    fetch('/api/quotes')
+                        .then((res) => res.json())
+                        .then(data => {
+                            setRowInUpdateState('');
+                            setQuotes(data);
+                        })
+                })*/
+
+            fetch(`/api/quotes`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(quoteToUpdate)
+            })
+                .then(() => {
+                    fetch('/api/quotes')
+                        .then((res) => res.json())
+                        .then(data => {
+                            setRowInUpdateState('');
+                            setQuotes(data);
+                        })
+                })
         }
     }
 
     const handleCheckboxChange = (newValue: boolean, id?: string) => {
-        if(id){
+        if (id) {
             setQuotes((prevQuotes) =>
                 prevQuotes.map((quote) =>
                     quote._id === id ? {...quote, display: newValue} : quote
@@ -65,8 +87,8 @@ export default function AdminPanel() {
         }
     }
 
-    const handleInputChange = ( newValue: string, id?: string) => {
-        if(id){
+    const handleInputChange = (newValue: string, id?: string) => {
+        if (id) {
             setQuotes((prevQuotes) =>
                 prevQuotes.map((quote) =>
                     quote._id === id ? {...quote, quote: newValue} : quote
@@ -101,6 +123,21 @@ export default function AdminPanel() {
             })
     }
 
+    const deleteQuote = (id?: string) => {
+        if (id) {
+            fetch(`/api/quotes/${id}`, {
+                method: 'DELETE',
+            })
+                .then(() => {
+                    fetch('/api/quotes')
+                        .then((res) => res.json())
+                        .then(data => {
+                            setQuotes(data);
+                        })
+                })
+        }
+    }
+
     return (
         <div className={styles.adminPanelContainer}>
             {
@@ -122,6 +159,7 @@ export default function AdminPanel() {
                             <tr>
                                 <td className={styles.valueColumn}>Value</td>
                                 <td>Show</td>
+                                <td></td>
                                 <td></td>
                             </tr>
                             </thead>
@@ -151,7 +189,12 @@ export default function AdminPanel() {
                                                 <input type={"checkbox"} checked={quote.display} disabled={true}
                                                        readOnly={true}/></td>
                                             <td>
-                                                <button onClick={() => quote._id && setRowInUpdateState(quote._id)}>edit</button>
+                                                <button
+                                                    onClick={() => quote._id && setRowInUpdateState(quote._id)}>edit
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <button onClick={() => deleteQuote(quote._id)}>delete</button>
                                             </td>
                                         </tr>
                                 ))
