@@ -5,6 +5,7 @@ import Skeleton from "@/components/skeleton";
 
 interface Quote {
     quote: string;
+    display: boolean
 }
 
 let index = 0;
@@ -15,6 +16,7 @@ export default function SecretMessage() {
         setIsLoading(true);
         fetch('/api/quotes')
             .then((res) => res.json())
+            .then(data => data.filter((record: Quote) => record.display))
             .then((data) => data.map((record: Quote) => record.quote))
             .then((quotes) => {
                 index = Math.floor(Math.random() * quotes.length);
