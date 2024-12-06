@@ -125,7 +125,7 @@ export default function AdminPanel() {
 
     const deleteQuote = (id?: string) => {
         if (id) {
-            fetch(`/api/quotes/${id}`, {
+            fetch(`/api/delete/${id}`, {
                 method: 'DELETE',
             })
                 .then(() => {
